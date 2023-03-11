@@ -4,8 +4,6 @@ interface Props {
   text: string
 }
 
-export const Message: FC<Props> = ({text}) => {
-  return (
-    <div></div>
-  )
+export const Message: FC<Props> = ({ text }) => {
+  return <div>{text}</div>
 }
