@@ -1,13 +1,35 @@
-import { FC } from 'react'
-import { FormControl, Button, Grid, GridItem } from '@chakra-ui/react'
+import { FC, useState, FormEvent } from 'react'
+import { Button, Grid, GridItem } from '@chakra-ui/react'
 import { Input } from '.'
+import { wsSend } from '../ws'
 
 export const ChatInput: FC = () => {
+  const [value, setValue] = useState('')
+
+  const messageSendHandler = (e: FormEvent) => {
+    if (value === '') return
+    e.preventDefault()
+    setValue('')
+    wsSend('chat-message', value)
+  }
+
   return (
-    <FormControl position={'fixed'} bottom='0'>
-      <Grid templateColumns='1fr 112px'>
+    <form
+      onSubmit={messageSendHandler}
+      style={{
+        position: 'fixed',
+        bottom: '0',
+        overflow: 'hidden',
+        width: '100%',
+        height: '48px'
+      }}
+    >
+      <Grid h={'100%'} templateColumns='1fr 112px'>
         <GridItem>
           <Input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            h={'100%'}
             _focus={{
               borderColor: 'purple.800',
               background: 'gray.100',
@@ -26,9 +48,11 @@ export const ChatInput: FC = () => {
         </GridItem>
         <GridItem>
           <Button
+            h={'100%'}
             _hover={{ background: 'purple.800' }}
             _active={{ background: 'purple.900' }}
             bgColor={'purple.700'}
+            border={'none'}
             borderRadius={'0'}
             w={'112px'}
             colorScheme={'blue'}
@@ -38,6 +62,6 @@ export const ChatInput: FC = () => {
           </Button>
         </GridItem>
       </Grid>
-    </FormControl>
+    </form>
   )
 }

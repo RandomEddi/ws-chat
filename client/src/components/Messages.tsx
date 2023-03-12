@@ -1,17 +1,33 @@
-import { FC } from 'react'
-import { Box } from '@chakra-ui/react'
+import { FC, useState } from 'react'
+import { Box, Flex } from '@chakra-ui/react'
 import Snowfall from 'react-snowfall'
 import { Message } from '.'
+import { wsConnection } from '../ws'
 
-export const Messages: FC<{ messages: string[] }> = ({ messages }) => {
+export const Messages: FC = () => {
+  const [messages, setMessages] = useState<string[]>([])
+
+  wsConnection.onmessage = (message) => {
+    const data = JSON.parse(message.data)
+    if (data.event === 'chat-message') {
+      setMessages(data.payload as string[])
+    }
+  }
+
   return (
-    <Box bgColor={'purple.400'} w={'100%'} h={'100vh'} position={'relative'}>
+    <Flex
+      flexDirection={'column-reverse'}
+      bgColor={'purple.400'}
+      w={'100%'}
+      h={'calc(100vh - 48px)'}
+      position={'relative'}
+    >
       <Snowfall color='white' />
-      <Box>
+      <Box px={'4'} w={'100%'} overflow={'auto'}>
         {messages.map((m) => (
           <Message text={m} key={Math.random()} />
         ))}
       </Box>
-    </Box>
+    </Flex>
   )
 }
