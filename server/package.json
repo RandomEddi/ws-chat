@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "nodemon ."
+    "watch": "nodemon index.js --config nodemon.json",
+    "start": "node ."
   },
   "keywords": [],
   "author": "",
