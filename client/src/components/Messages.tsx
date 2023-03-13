@@ -1,7 +1,6 @@
 import { FC, useState } from 'react'
 import { Box, Flex } from '@chakra-ui/react'
-import Snowfall from 'react-snowfall'
-import { Message } from '.'
+import { Message, SnowBackground } from '.'
 import { wsConnection } from '../ws'
 
 export const Messages: FC = () => {
@@ -22,7 +21,7 @@ export const Messages: FC = () => {
       h={'calc(100vh - 48px)'}
       position={'relative'}
     >
-      <Snowfall color='white' />
+      <SnowBackground />
       <Box px={'4'} w={'100%'} overflow={'auto'}>
         {messages.map((m) => (
           <Message text={m} key={Math.random()} />

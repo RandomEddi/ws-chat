@@ -15,20 +15,30 @@ import {
 } from '@chakra-ui/react'
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons'
 import { HuePicker, AlphaPicker, Color } from 'react-color'
+import { useSnowContext } from '../store'
 
-const THEMES: [string, string][] = [
-  ['purple', 'purple.700'],
-  ['blue', 'blue.700'],
-  ['green', 'green.700'],
-  ['gray', 'gray.700'],
-  ['orange', 'orange.700'],
-  ['red', 'red.700']
-]
+// const THEMES: [string, string][] = [
+//   ['purple', 'purple.700'],
+//   ['blue', 'blue.700'],
+//   ['green', 'green.700'],
+//   ['gray', 'gray.700'],
+//   ['orange', 'orange.700'],
+//   ['red', 'red.700']
+// ]
+
+const THEMES: Record<string, string> = {
+  purple: 'purple.700',
+  blue: 'blue.700',
+  green: 'green.700',
+  gray: 'gray.700',
+  orange: 'orange.700',
+  red: 'red.700'
+}
 
 export const ThemeSettings: FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure()
-  const [isSnowEnabled, setIsSnowEnabled] = useState(true)
-  const [snowColor, setSnowColor] = useState<Color>('#ffffff')
+  const snowContext = useSnowContext()
+  console.log(snowContext)
 
   return (
     <Box zIndex={100} position={'fixed'} top={'4'} right={'4'}>
@@ -65,16 +75,16 @@ export const ThemeSettings: FC = () => {
               flexWrap={'wrap'}
               px={'2'}
             >
-              {THEMES.map((theme) => (
-                <Flex justifyContent={'center'} key={theme[0]}>
+              {Object.keys(THEMES).map((theme) => (
+                <Flex justifyContent={'center'} key={theme}>
                   <Tooltip
                     borderRadius={'4px'}
-                    label={theme[0]}
+                    label={theme}
                     fontSize={'md'}
-                    bg={theme[1]}
+                    bg={THEMES[theme]}
                     color={'white'}
                   >
-                    <Button _hover={{}} _active={{}} bg={theme[1]} />
+                    <Button _hover={{}} _active={{}} bg={THEMES[theme]} />
                   </Tooltip>
                 </Flex>
               ))}
@@ -95,19 +105,19 @@ export const ThemeSettings: FC = () => {
               justifyContent={'center'}
             >
               <Switch
-                checked={isSnowEnabled}
-                onChange={(e) => setIsSnowEnabled(e.target.checked)}
+                isChecked={snowContext.isEnabled}
+                onChange={(e) => snowContext.setIsEnabled(e.target.checked)}
               />
-              {/* TODO: Доделать*/}
               <HuePicker
-                color={snowColor}
-                onChange={(color) => setSnowColor(color.rgb)}
-                width={`${60 * 4}px`}
+                styles={{ default: { picker: { margin: '10px 0' } } }}
+                color={snowContext.color}
+                onChange={(color) => snowContext.setColor(color.rgb)}
+                width={`${55 * 4}px`}
               />
               <AlphaPicker
-                color={snowColor}
-                onChange={(color) => setSnowColor(color.rgb)}
-                width={`${60 * 4}px`}
+                color={snowContext.color}
+                onChange={(color) => snowContext.setColor(color.rgb)}
+                width={`${55 * 4}px`}
               />
             </Flex>
           </Flex>
