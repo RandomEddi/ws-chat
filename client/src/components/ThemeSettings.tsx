@@ -29,8 +29,10 @@ const THEMES: Record<string, string> = {
 
 export const ThemeSettings: FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure()
-  const { colorMode, setColorMode } = useColorMode()
+  const { setColorMode } = useColorMode()
   const snowContext = useSnowContext()
+
+  const onSnowToggle = () => {}
 
   return (
     <Box zIndex={100} position={'fixed'} top={'4'} right={'4'}>
@@ -103,17 +105,17 @@ export const ThemeSettings: FC = () => {
             >
               <Switch
                 isChecked={snowContext.isEnabled}
-                onChange={(e) => snowContext.setIsEnabled(e.target.checked)}
+                onChange={(e) => snowContext.onSnowToggle(e.target.checked)}
               />
               <HuePicker
                 styles={{ default: { picker: { margin: '10px 0' } } }}
                 color={snowContext.color}
-                onChange={(color) => snowContext.setColor(color.rgb)}
+                onChange={snowContext.onColorSnowChange}
                 width={`${55 * 4}px`}
               />
               <AlphaPicker
                 color={snowContext.color}
-                onChange={(color) => snowContext.setColor(color.rgb)}
+                onChange={snowContext.onColorSnowChange}
                 width={`${55 * 4}px`}
               />
             </Flex>
