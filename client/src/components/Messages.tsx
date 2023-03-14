@@ -1,10 +1,12 @@
 import { FC, useState } from 'react'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, useColorMode } from '@chakra-ui/react'
 import { Message, SnowBackground } from '.'
 import { wsConnection } from '../ws'
+import { colorChange } from '../utils'
 
 export const Messages: FC = () => {
   const [messages, setMessages] = useState<string[]>([])
+  const { colorMode } = useColorMode()
 
   wsConnection.onmessage = (message) => {
     const data = JSON.parse(message.data)
@@ -16,7 +18,7 @@ export const Messages: FC = () => {
   return (
     <Flex
       flexDirection={'column-reverse'}
-      bgColor={'purple.400'}
+      bgColor={colorChange(colorMode, 400)}
       w={'100%'}
       h={'calc(100vh - 48px)'}
       position={'relative'}

@@ -11,20 +11,12 @@ import {
   Tooltip,
   Grid,
   Switch,
-  Input
+  Input,
+  useColorMode
 } from '@chakra-ui/react'
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons'
 import { HuePicker, AlphaPicker, Color } from 'react-color'
 import { useSnowContext } from '../store'
-
-// const THEMES: [string, string][] = [
-//   ['purple', 'purple.700'],
-//   ['blue', 'blue.700'],
-//   ['green', 'green.700'],
-//   ['gray', 'gray.700'],
-//   ['orange', 'orange.700'],
-//   ['red', 'red.700']
-// ]
 
 const THEMES: Record<string, string> = {
   purple: 'purple.700',
@@ -37,8 +29,8 @@ const THEMES: Record<string, string> = {
 
 export const ThemeSettings: FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure()
+  const { colorMode, setColorMode } = useColorMode()
   const snowContext = useSnowContext()
-  console.log(snowContext)
 
   return (
     <Box zIndex={100} position={'fixed'} top={'4'} right={'4'}>
@@ -53,9 +45,9 @@ export const ThemeSettings: FC = () => {
             cursor={'pointer'}
           >
             {isOpen ? (
-              <CloseIcon color={'purple.900'} boxSize={'7'} />
+              <CloseIcon color={'white'} boxSize={'7'} />
             ) : (
-              <SettingsIcon color={'purple.900'} boxSize={'8'} />
+              <SettingsIcon color={'white'} boxSize={'8'} />
             )}
           </Button>
         </PopoverTrigger>
@@ -84,7 +76,12 @@ export const ThemeSettings: FC = () => {
                     bg={THEMES[theme]}
                     color={'white'}
                   >
-                    <Button _hover={{}} _active={{}} bg={THEMES[theme]} />
+                    <Button
+                      onClick={() => setColorMode(THEMES[theme])}
+                      _hover={{}}
+                      _active={{}}
+                      bg={THEMES[theme]}
+                    />
                   </Tooltip>
                 </Flex>
               ))}
