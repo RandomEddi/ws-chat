@@ -6,6 +6,7 @@ const path = require('path')
 const cors = require('cors')
 const dbConnection = require('./services/db')
 require('dotenv').config()
+const { v4: uuidv4 } = require('uuid')
 
 const authRouter = require('./routes/auth')
 
@@ -51,7 +52,7 @@ const dispatchEvent = (message, ws) => {
             throw Error(err)
           } else {
             dbConnection.query(
-              `SELECT m.id AS message_id, m.text AS message_text, u.name AS sender_name, m.send_at AS send_at
+              `SELECT m.id AS message_id, m.text AS message_text, u.id as sender_id, u.name AS sender_name, u.imageUrl as sender_image, m.send_at AS send_at
               FROM Messages m
               JOIN Users u ON m.userId = u.id
               WHERE m.id = ${result.insertId}
@@ -72,7 +73,7 @@ const dispatchEvent = (message, ws) => {
     case 'chat-messages':
       dbConnection.query(
         `
-      SELECT m.id AS message_id, u.name as sender_name, m.text AS message_text, m.send_at as send_at
+      SELECT m.id AS message_id, u.name as sender_name, u.id as sender_id, u.imageUrl as sender_image, m.text AS message_text, m.send_at as send_at
       FROM Messages m, Users u
       WHERE m.userId = u.id 
       `,
@@ -100,7 +101,7 @@ const dispatchEvent = (message, ws) => {
 }
 const dispatchBinaryEvent = (message, ws) => {
   const avatarDirectory = path.join(__dirname, 'avatars')
-  const imageUrl = `/avatars/${ws.userId}.jpeg`
+  const imageUrl = `/avatars/${uuidv4()}.jpeg`
 
   if (!fs.existsSync(avatarDirectory)) {
     fs.mkdirSync(avatarDirectory)
@@ -109,9 +110,31 @@ const dispatchBinaryEvent = (message, ws) => {
     if (err) {
       console.log('Error saving image:', err)
     } else {
-      console.log('ggodd')
+      dbConnection.query(
+        `SELECT id, imageUrl FROM users WHERE id = ${ws.userId}`,
+        (err, rows) => {
+          if (!err && rows[0]?.imageUrl) {
+            fs.unlink(path.join(__dirname, rows[0].imageUrl), (err) => {
+              if (err) {
+                console.log(err)
+              }
+            })
+          }
+        }
+      )
       dbConnection.query(
         `UPDATE users SET imageUrl = "${imageUrl}" WHERE id = ${ws.userId}`
+      )
+      webSocketServer.clients.forEach((client) =>
+        client.send(
+          JSON.stringify({
+            event: 'avatar-change',
+            payload: {
+              userId: ws.userId,
+              imageUrl
+            }
+          })
+        )
       )
     }
   })

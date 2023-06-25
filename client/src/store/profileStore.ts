@@ -4,6 +4,7 @@ import { IUser } from '../types'
 interface IInitialState {
   user: IUser
   setUser: (user: IUser) => void
+  changeAvatar: (imageUrl: string) => void
 }
 
 export const useProfileStore = create<IInitialState>()((set) => ({
@@ -15,5 +16,9 @@ export const useProfileStore = create<IInitialState>()((set) => ({
   setUser: (user: IUser) =>
     set(() => ({
       user
+    })),
+  changeAvatar: (imageUrl: string) =>
+    set((state) => ({
+      user: { ...state.user, imageUrl }
     }))
 }))

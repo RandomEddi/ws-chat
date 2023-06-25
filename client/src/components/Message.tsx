@@ -9,11 +9,20 @@ interface Props {
 }
 
 export const Message: FC<Props> = ({ message, isSameMessage }) => {
+
+  console.log(message)
   return (
     <Flex>
       {!isSameMessage && (
         <Box>
-          <Avatar name={message.senderName} />
+          <Avatar
+            src={
+              message.senderImg
+                ? `http://localhost:3000${message.senderImg}`
+                : undefined
+            }
+            name={message.senderName}
+          />
         </Box>
       )}
       <Box>
