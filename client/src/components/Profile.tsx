@@ -25,13 +25,9 @@ export const Profile: FC = () => {
 
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files?.length > 0) {
-      const formData = new FormData()
       const file = event.target.files[0]
-      formData.append('userId', user.id.toString())
-      formData.append('image', file)
 
-      const formDataString = JSON.stringify(Array.from(formData.entries()))
-      console.log(formDataString)
+      wsConnection.send(file)
     }
   }
 

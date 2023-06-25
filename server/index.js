@@ -79,16 +79,31 @@ const dispatchEvent = (message, ws) => {
       )
 
       break
+    case 'me':
+      ws.userId = json.payload
+      break
     default:
       ws.send(new Error('wrong query').message)
       break
   }
 }
 const dispatchBinaryEvent = (message, ws) => {
-  console.log(message)
-  // const bufferData = Buffer.from(message)
-  // console.log(bufferData.toString('utf-8'))
-  // dbConnection.query(`UPDATE users SET image = ${json.get('image')} WHERE id=${json.get("userId")}`)
+  const avatarDirectory = path.join(__dirname, 'avatars');
+  const imageUrl = path.join(avatarDirectory, `${ws.userId}.jpeg`);
+
+  if (!fs.existsSync(avatarDirectory)) {
+    fs.mkdirSync(avatarDirectory);
+  }
+  fs.writeFile(imageUrl, message, (err) => {
+    if (err) {
+      console.log('Error saving image:', err)
+    } else {
+      console.log('ggodd')
+      dbConnection.query(
+        `UPDATE users SET imageUrl = ${imageUrl} WHERE id=${ws.userId}`
+      )
+    }
+  })
 }
 
 webSocketServer.on('connection', (ws, req) => {

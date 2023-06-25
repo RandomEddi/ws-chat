@@ -21,7 +21,7 @@ connection.connect((err) => {
 connection.query(`CREATE TABLE IF NOT EXISTS Users (
   id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  image BLOB,
+  imageUrl VARCHAR(50),
   token VARCHAR(50) NOT NULL,
   password VARCHAR(50) NOT NULL
 )`)

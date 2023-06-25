@@ -1,4 +1,4 @@
-export type wsEvents = 'chat-message' | 'chat-messages' | 'change-avatar'
+export type wsEvents = 'chat-message' | 'chat-messages' | 'change-avatar' | 'me'
 
 export interface IWSResponse<T = any> {
   event: wsEvents

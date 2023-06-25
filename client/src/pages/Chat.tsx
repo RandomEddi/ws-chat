@@ -24,10 +24,6 @@ export const Chat: FC = () => {
       return
     }
 
-    wsConnection.onopen = function () {
-      console.log('connected')
-    }
-
     wsConnection.onmessage = (message) => {
       const data = JSON.parse(message.data) as IWSResponse
       switch (data.event) {
@@ -73,6 +69,7 @@ export const Chat: FC = () => {
         .then((resp) => resp.json())
         .then((data) => {
           if (data.status === 'success') {
+            wsSend('me', data.payload.id)
             wsSend('chat-messages', null)
             setUser(data.payload)
           } else {

@@ -1,1 +1,1 @@
-{ "verbose": true, "ignore": ["./data/messages.json", "./data/users.json"] }
+{ "verbose": true, "ignore": ["./avatars"] }
