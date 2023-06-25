@@ -1,19 +1,15 @@
-import { wsEvent } from '../types'
+import { wsEvents } from '../types'
 
 export const wsConnection = new WebSocket('ws://localhost:5000')
 
-wsConnection.onopen = function () {
-  console.log('connected')
+wsConnection.onerror = function (this: any, event: Event) {
+  console.error('error', event)
 }
 
-wsConnection.onerror = function () {
-  console.log('error')
-}
-
-export const wsSend = (event: wsEvent, data: any) => {
-  const message = JSON.stringify({ event, payload: data })
+export const wsSend = (event: wsEvents, payload: any) => {
+  const message = JSON.stringify({ event, payload: payload })
   if (!wsConnection.readyState) {
-    setTimeout(() => wsSend(event, message))
+    setTimeout(() => wsSend(event, payload))
   } else {
     wsConnection.send(message)
   }

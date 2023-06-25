@@ -3,10 +3,21 @@ const fs = require('fs')
 const http = require('http')
 const WebSocket = require('ws')
 const path = require('path')
+const cors = require('cors')
+const dbConnection = require('./services/db')
+require('dotenv').config()
+
+const authRouter = require('./routes/auth')
 
 const app = express()
 
 app.use(express.static(path.resolve(__dirname, '..', 'dist')))
+
+app.use(express.json())
+
+app.use(cors())
+
+app.use('/', authRouter)
 
 app.get('*', (_req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'dist', 'index.html'))
@@ -18,37 +29,77 @@ const webSocketServer = new WebSocket.Server({ server })
 
 const dispatchEvent = (message, ws) => {
   const json = JSON.parse(message)
-  console.log(json.payload)
   switch (json.event) {
     case 'chat-message':
-      const messages =
-        JSON.parse(fs.readFileSync('./messages.json')).messages || []
-      messages.push(json.payload)
-      webSocketServer.clients.forEach((client) =>
-        client.send(
-          JSON.stringify({ event: 'chat-message', payload: messages })
-        )
+      dbConnection.query(
+        `INSERT INTO messages (userId, text, send_at) VALUES (${
+          json.payload.userId
+        }, "${json.payload.text}", ${Date.now()})`,
+        (err, result) => {
+          if (err) {
+            throw Error(err)
+          } else {
+            dbConnection.query(
+              `SELECT m.id AS message_id, m.text AS message_text, u.name AS sender_name, m.send_at AS send_at
+              FROM Messages m
+              JOIN Users u ON m.userId = u.id
+              WHERE m.id = ${result.insertId}
+              `,
+              (_, rows) => {
+                webSocketServer.clients.forEach((client) =>
+                  client.send(
+                    JSON.stringify({ event: 'chat-message', payload: rows[0] })
+                  )
+                )
+              }
+            )
+          }
+        }
       )
-      fs.writeFile(
-        './messages.json',
-        JSON.stringify({ messages }),
-        (err) => console.log
+
+      break
+    case 'chat-messages':
+      dbConnection.query(
+        `
+      SELECT m.id AS message_id, u.name as sender_name, m.text AS message_text, m.send_at as send_at
+      FROM Messages m, Users u
+      WHERE m.userId = u.id 
+      `,
+        (error, rows) => {
+          if (error) {
+          } else {
+            ws.send(
+              JSON.stringify({
+                event: 'chat-messages',
+                payload: rows || []
+              })
+            )
+          }
+        }
       )
+
       break
     default:
       ws.send(new Error('wrong query').message)
       break
   }
 }
+const dispatchBinaryEvent = (message, ws) => {
+  console.log(message)
+  // const bufferData = Buffer.from(message)
+  // console.log(bufferData.toString('utf-8'))
+  // dbConnection.query(`UPDATE users SET image = ${json.get('image')} WHERE id=${json.get("userId")}`)
+}
 
-webSocketServer.on('connection', (ws) => {
+webSocketServer.on('connection', (ws, req) => {
   ws.on('message', (m) => {
-    dispatchEvent(m, ws)
+    if (typeof m === 'string') {
+      dispatchEvent(m, ws)
+    } else if (typeof m === 'object') {
+      dispatchBinaryEvent(m, ws)
+    }
   })
-
   ws.on('error', (e) => ws.send(e))
-  const messages = JSON.parse(fs.readFileSync('./messages.json')).messages || []
-  ws.send(JSON.stringify({ event: 'chat-message', payload: messages }))
 })
 
 const PORT = process.env.NODE_PORT || 5000

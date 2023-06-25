@@ -1,16 +1,14 @@
-import { Messages, ChatInput, ThemeSettings } from './components'
-import { Flex } from '@chakra-ui/react'
+import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { Chat, Login } from './pages'
 
 function App() {
-  return (
-    <>
-      <Flex>
-        <Messages />
-        <ChatInput />
-      </Flex>
-      <ThemeSettings />
-    </>
-  )
+  const router = createBrowserRouter([
+    { path: '/login', element: <Login /> },
+    { path: '/chat', element: <Chat /> },
+    { path: '*', element: <Navigate to={'/login'} /> }
+  ])
+
+  return <RouterProvider router={router} />
 }
 
 export default App

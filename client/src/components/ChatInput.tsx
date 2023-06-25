@@ -1,18 +1,29 @@
 import { FC, useState, FormEvent } from 'react'
-import { Button, Grid, GridItem, useColorMode } from '@chakra-ui/react'
-import { Input } from '.'
+import {
+  Button,
+  Grid,
+  GridItem,
+  useColorMode,
+  Skeleton,
+  Input
+} from '@chakra-ui/react'
 import { wsSend } from '../ws'
 import { colorChange } from '../utils'
+import { useMessagesStore, useProfileStore } from '../store'
 
 export const ChatInput: FC = () => {
   const [value, setValue] = useState('')
   const { colorMode } = useColorMode()
+  const user = useProfileStore(({ user }) => user)
 
   const messageSendHandler = (e: FormEvent) => {
     if (value === '') return
     e.preventDefault()
     setValue('')
-    wsSend('chat-message', value)
+    wsSend('chat-message', {
+      userId: user.id,
+      text: value
+    })
   }
 
   return (
