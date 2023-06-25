@@ -1,6 +1,4 @@
-const fs = require('fs')
 const jwt = require('jsonwebtoken')
-const path = require('path')
 const SECRET_KEY = 'za2b-457c33d-5e6f-7g8h'
 const dbConnecton = require('../services/db')
 
@@ -50,7 +48,7 @@ async function login(req, res) {
     const { name, password } = req.body
     const rows = await new Promise((resolve) => {
       dbConnecton.query(
-        `SELECT id, name, token, password from users where name = "${name}"`,
+        `SELECT id, name, token, password, imageUrl from users where name = "${name}"`,
         (_, rows) => {
           resolve(rows)
         }
@@ -66,7 +64,12 @@ async function login(req, res) {
       if (rows[0].password === password) {
         res.status(200).json({
           status: 'success',
-          payload: { name: rows[0].name, token: rows[0].token, id: rows[0].id }
+          payload: {
+            name: rows[0].name,
+            token: rows[0].token,
+            id: rows[0].id,
+            image: rows[0].imageUrl
+          }
         })
       } else {
         res.status(401).json({
@@ -101,7 +104,7 @@ async function verifyToken(req, res) {
         })
       } else {
         dbConnecton.query(
-          `SELECT id, name, token from users where token = "${token}"`,
+          `SELECT id, name, token, imageUrl from users where token = "${token}"`,
           (_, rows) => {
             res.status(200).json({
               status: 'success',

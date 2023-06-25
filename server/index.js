@@ -88,19 +88,19 @@ const dispatchEvent = (message, ws) => {
   }
 }
 const dispatchBinaryEvent = (message, ws) => {
-  const avatarDirectory = path.join(__dirname, 'avatars');
-  const imageUrl = path.join(avatarDirectory, `${ws.userId}.jpeg`);
+  const avatarDirectory = path.join(__dirname, 'avatars')
+  const imageUrl = `avatars/${ws.userId}.jpeg`
 
   if (!fs.existsSync(avatarDirectory)) {
-    fs.mkdirSync(avatarDirectory);
+    fs.mkdirSync(avatarDirectory)
   }
-  fs.writeFile(imageUrl, message, (err) => {
+  fs.writeFile(path.join(__dirname, imageUrl), message, (err) => {
     if (err) {
       console.log('Error saving image:', err)
     } else {
       console.log('ggodd')
       dbConnection.query(
-        `UPDATE users SET imageUrl = ${imageUrl} WHERE id=${ws.userId}`
+        `UPDATE users SET imageUrl = "${imageUrl}" WHERE id = ${ws.userId}`
       )
     }
   })
