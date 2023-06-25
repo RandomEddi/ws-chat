@@ -57,7 +57,7 @@ export const Chat: FC = () => {
       }
     }
     ;(async () => {
-      fetch('http://localhost:5000/verifyToken', {
+      fetch('http://localhost:3000/verifyToken', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

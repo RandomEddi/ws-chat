@@ -40,7 +40,7 @@ export const Login: FC = () => {
       setPasswordError('Пароль должен быть 8 или больше символов')
       return
     }
-    fetch('http://localhost:5000/register', {
+    fetch('http://localhost:3000/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ export const Login: FC = () => {
   }
 
   const loginHandler = async () => {
-    fetch('http://localhost:5000/login', {
+    fetch('http://localhost:3000/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

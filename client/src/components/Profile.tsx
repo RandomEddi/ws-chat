@@ -39,7 +39,10 @@ export const Profile: FC = () => {
   return (
     <>
       <Box cursor={'pointer'} onClick={() => setIsOpen(true)}>
-        <Avatar name={user.name} />
+        <Avatar
+          src={`http://localhost:3000${user.imageUrl}`}
+          name={user.name}
+        />
       </Box>
       {isOpen && (
         <Flex
@@ -91,7 +94,11 @@ export const Profile: FC = () => {
                     </FormLabel>
                   </>
                 ) : (
-                  <Avatar size={'2xl'} name={user.name} />
+                  <Avatar
+                    src={`http://localhost:3000${user.imageUrl}`}
+                    size={'2xl'}
+                    name={user.name}
+                  />
                 )}
               </Box>
               <Text

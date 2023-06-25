@@ -19,6 +19,17 @@ app.use(cors())
 
 app.use('/', authRouter)
 
+const avatarsDirectory = path.join(__dirname, 'avatars')
+app.use(
+  '/avatars',
+  express.static(avatarsDirectory, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'image/jpeg'
+    }
+  })
+)
+
 app.get('*', (_req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'dist', 'index.html'))
 })
@@ -89,7 +100,7 @@ const dispatchEvent = (message, ws) => {
 }
 const dispatchBinaryEvent = (message, ws) => {
   const avatarDirectory = path.join(__dirname, 'avatars')
-  const imageUrl = `avatars/${ws.userId}.jpeg`
+  const imageUrl = `/avatars/${ws.userId}.jpeg`
 
   if (!fs.existsSync(avatarDirectory)) {
     fs.mkdirSync(avatarDirectory)
@@ -117,6 +128,6 @@ webSocketServer.on('connection', (ws, req) => {
   ws.on('error', (e) => ws.send(e))
 })
 
-const PORT = process.env.NODE_PORT || 5000
+const PORT = process.env.NODE_PORT || 3000
 
 server.listen(PORT, () => console.log('server started'))

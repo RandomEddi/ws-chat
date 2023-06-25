@@ -1,6 +1,6 @@
 import { wsEvents } from '../types'
 
-export const wsConnection = new WebSocket('ws://localhost:5000')
+export const wsConnection = new WebSocket('ws://localhost:3000')
 
 wsConnection.onerror = function (this: any, event: Event) {
   console.error('error', event)
