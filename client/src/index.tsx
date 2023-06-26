@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { ContextProviders } from './store'
+import { SnowProvider } from './store'
 import './index.css'
 
 const theme = extendTheme({
@@ -10,9 +10,9 @@ const theme = extendTheme({
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <ContextProviders>
+  <SnowProvider>
     <ChakraProvider theme={theme}>
       <App />
     </ChakraProvider>
-  </ContextProviders>
+  </SnowProvider>
 )
