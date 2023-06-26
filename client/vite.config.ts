@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import eslint from 'vite-plugin-eslint';
 
 export default defineConfig({
   server: {
@@ -16,5 +15,5 @@ export default defineConfig({
   },
   mode: 'development',
   base: '/',
-  plugins: [react(), eslint()]
+  plugins: [react()]
 })
