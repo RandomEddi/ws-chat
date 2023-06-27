@@ -41,9 +41,12 @@ export const Chat: FC = () => {
             wsSend('chat-messages', null)
             user.setUser(data.payload)
           } else {
-            navigate('/login')
-            deleteCookies('token')
+            throw new Error('wrong token')
           }
+        })
+        .catch(() => {
+          navigate('/login')
+          deleteCookies('token')
         })
     })()
   }, [cookies.token])
