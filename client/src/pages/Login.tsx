@@ -1,17 +1,9 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Text
-} from '@chakra-ui/react'
-import Fireworks from '@fireworks-js/react'
 import { FC, useEffect, useState } from 'react'
-import { useProfileStore } from '../store'
 import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
+import { Box, Button, Flex, FormLabel, Input, Text } from '@chakra-ui/react'
+import Fireworks from '@fireworks-js/react'
+import { useProfileStore } from '../store'
 
 export const Login: FC = () => {
   const [isLoginActive, setIsLoginActive] = useState(false)

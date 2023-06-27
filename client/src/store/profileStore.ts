@@ -1,19 +1,19 @@
 import { create } from 'zustand'
-import { IUser } from '../types'
+import { User } from '../types'
 
-interface IInitialState {
-  user: IUser
-  setUser: (user: IUser) => void
+interface InitialState {
+  user: User
+  setUser: (user: User) => void
   changeAvatar: (imageUrl: string) => void
 }
 
-export const useProfileStore = create<IInitialState>()((set) => ({
+export const useProfileStore = create<InitialState>()((set) => ({
   user: {
     id: 0,
     name: '',
     token: ''
   },
-  setUser: (user: IUser) =>
+  setUser: (user: User) =>
     set(() => ({
       user
     })),

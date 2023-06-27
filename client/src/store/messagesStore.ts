@@ -1,25 +1,25 @@
 import { create } from 'zustand'
-import { IMessage } from '../types'
+import { ChatMessage } from '../types'
 
-interface IInitialState {
-  messages: IMessage[]
-  setMessages: (messages: IMessage[]) => void
-  addMessage: (message: IMessage) => void
+interface InitialState {
+  messages: ChatMessage[]
+  setMessages: (messages: ChatMessage[]) => void
+  addMessage: (message: ChatMessage) => void
   changeAvatarMessage: (userId: number, imageUrl: string) => void
 }
 
-export const useMessagesStore = create<IInitialState>()((set) => ({
+export const useMessagesStore = create<InitialState>()((set) => ({
   messages: [],
-  setMessages: (messages: IMessage[]) => set(() => ({ messages })),
-  addMessage: (message: IMessage) =>
+  setMessages: (messages: ChatMessage[]) => set(() => ({ messages })),
+  addMessage: (message: ChatMessage) =>
     set((state) => ({
       messages: [...state.messages, message]
     })),
   changeAvatarMessage: (userId: number, imageUrl: string) => {
     set((state) => ({
-      messages: state.messages.map(message => {
+      messages: state.messages.map((message) => {
         if (message.senderId === userId) {
-          return {...message, senderImg: imageUrl}
+          return { ...message, senderImg: imageUrl }
         }
         return message
       })

@@ -1,9 +1,9 @@
-import { FC, useEffect, useRef } from 'react'
+import { type FC, useEffect, useRef } from 'react'
 import { Box, Flex, useColorMode } from '@chakra-ui/react'
-import { Message, SnowBackground } from '.'
 import { colorChange } from '../utils'
 import { useMessagesStore } from '../store'
-import { IMessage } from '../types'
+import type { ChatMessage } from '../types'
+import { Message, SnowBackground } from '.'
 
 export const Messages: FC = () => {
   const { messages } = useMessagesStore(({ messages }) => ({
@@ -11,7 +11,7 @@ export const Messages: FC = () => {
   }))
   const { colorMode } = useColorMode()
   const messagesDivRef = useRef<HTMLDivElement | null>(null)
-  const lastMessage = useRef<null | IMessage>(null)
+  const lastMessage = useRef<null | ChatMessage>(null)
 
   useEffect(() => {
     lastMessage.current = null

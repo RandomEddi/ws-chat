@@ -1,16 +1,14 @@
-import { FC } from 'react'
+import { type FC } from 'react'
 import { Avatar, Box, Flex, Text } from '@chakra-ui/react'
-import { IMessage } from '../types'
+import type { ChatMessage } from '../types'
 import { timeConvert } from '../utils'
 
 interface Props {
-  message: IMessage
+  message: ChatMessage
   isSameMessage: boolean
 }
 
 export const Message: FC<Props> = ({ message, isSameMessage }) => {
-
-  console.log(message)
   return (
     <Flex>
       {!isSameMessage && (

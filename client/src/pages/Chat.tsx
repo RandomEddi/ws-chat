@@ -1,11 +1,11 @@
 import { FC, useEffect } from 'react'
-import { Flex } from '@chakra-ui/react'
-import { ChatInput, Messages, Profile, ThemeSettings } from '../components'
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
+import { Flex } from '@chakra-ui/react'
+import { ChatInput, Messages, Profile, ThemeSettings } from '../components'
 import { wsConnection, wsSend } from '../ws'
 import { useMessagesStore, useProfileStore } from '../store'
-import { IWSResponse } from '../types'
+import { WSResponse } from '../types'
 
 export const Chat: FC = () => {
   const [cookies, _, deleteCookies] = useCookies(['token'])
@@ -53,7 +53,7 @@ export const Chat: FC = () => {
 
   useEffect(() => {
     wsConnection.onmessage = (message) => {
-      const data = JSON.parse(message.data) as IWSResponse
+      const data = JSON.parse(message.data) as WSResponse
       switch (data.event) {
         case 'chat-messages':
           const messages = data.payload as {

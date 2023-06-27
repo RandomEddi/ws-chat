@@ -1,7 +1,7 @@
-import { FC, useState } from 'react'
+import { type FC } from 'react'
+import { HuePicker, AlphaPicker } from 'react-color'
 import {
   Button,
-  Box,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -11,11 +11,9 @@ import {
   Tooltip,
   Grid,
   Switch,
-  Input,
   useColorMode
 } from '@chakra-ui/react'
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons'
-import { HuePicker, AlphaPicker, Color } from 'react-color'
 import { useSnowContext } from '../store'
 
 const THEMES: Record<string, string> = {
@@ -31,8 +29,6 @@ export const ThemeSettings: FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure()
   const { setColorMode } = useColorMode()
   const snowContext = useSnowContext()
-
-  const onSnowToggle = () => {}
 
   return (
     <Popover isOpen={isOpen} onClose={onClose}>

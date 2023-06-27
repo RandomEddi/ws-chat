@@ -1,4 +1,4 @@
-export interface IMessage {
+export interface ChatMessage {
   senderName: string
   senderId: number
   senderImg?: string

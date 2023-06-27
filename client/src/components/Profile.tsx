@@ -1,3 +1,6 @@
+import { ChangeEvent, type FC, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 import {
   Box,
   Avatar,
@@ -5,15 +8,11 @@ import {
   Flex,
   useColorMode,
   Text,
-  Input,
   FormLabel
 } from '@chakra-ui/react'
-import { ChangeEvent, FC, useState } from 'react'
+import { wsConnection } from '../ws'
 import { useProfileStore } from '../store'
-import { useCookies } from 'react-cookie'
 import { colorChange } from '../utils'
-import { useNavigate } from 'react-router-dom'
-import { wsConnection, wsSend } from '../ws'
 
 export const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -56,7 +55,7 @@ export const Profile: FC = () => {
           <Flex
             flexDirection={'column'}
             alignItems={'center'}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             py={'32'}
             px={'80'}
             borderRadius={10}

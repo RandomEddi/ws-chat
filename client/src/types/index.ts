@@ -1,3 +1,3 @@
-export type { wsEvents, IWSResponse } from './ws'
-export type { IMessage } from './message'
-export type { IUser } from './user'
+export type { wsEvents, WSResponse } from './ws'
+export type { ChatMessage } from './chat-message'
+export type { User } from './user'
