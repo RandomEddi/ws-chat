@@ -101,13 +101,18 @@ export const Login: FC = () => {
         minH={'100vh'}
         position={'relative'}
       >
-        <FormControl
-          borderRadius={10}
-          p={'15px 25px 20px 25px'}
-          zIndex={150}
-          maxW={600}
-          mx={20}
-          bgColor={'purple.50'}
+        <form
+          style={{
+            borderRadius: '10px',
+            padding: '15px 25px 20px 25px',
+            margin: '0 80px',
+            maxWidth: '600px',
+            backgroundColor: '#FAF5FF',
+
+            zIndex: 150,
+            width: '100%',
+            position: 'relative'
+          }}
         >
           <Text mb={7} fontSize={20} textAlign={'center'} fontWeight={'bold'}>
             {isLoginActive ? 'Логин' : 'Регистрация'}
@@ -176,7 +181,7 @@ export const Login: FC = () => {
               {isLoginActive ? 'Зарегистрироваться' : 'Войти'}
             </Button>
           </Flex>
-        </FormControl>
+        </form>
       </Flex>
       <Fireworks
         options={{
