@@ -100,7 +100,7 @@ export const Chat: FC = () => {
 
   return (
     <>
-      <Flex>
+      <Flex flexDirection={'column'}>
         <Messages />
         <ChatInput />
       </Flex>

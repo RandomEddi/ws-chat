@@ -25,7 +25,6 @@ export const Profile: FC = () => {
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files?.length > 0) {
       const file = event.target.files[0]
-
       wsConnection.send(file)
     }
   }
@@ -39,6 +38,7 @@ export const Profile: FC = () => {
     <>
       <Box cursor={'pointer'} onClick={() => setIsOpen(true)}>
         <Avatar
+          boxShadow={'base'}
           src={`http://localhost:3000${user.imageUrl}`}
           name={user.name}
         />
@@ -59,7 +59,13 @@ export const Profile: FC = () => {
             py={'32'}
             px={'80'}
             borderRadius={10}
-            bgColor={colorChange(colorMode, 800)}
+            bgColor={
+              colorMode === 'dark'
+                ? 'blackAlpha.600'
+                : colorMode === 'light'
+                ? 'whiteAlpha.600'
+                : colorChange(colorMode, 800)
+            }
           >
             <Flex flexDirection={'column'} alignItems={'center'} mb={'40'}>
               <Box

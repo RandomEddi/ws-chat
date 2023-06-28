@@ -5,7 +5,7 @@ import { SnowProvider } from './store'
 import './index.css'
 
 const theme = extendTheme({
-  config: { initialColorMode: 'dark', useSystemColorMode: false }
+  config: { initialColorMode: 'system', useSystemColorMode: false }
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

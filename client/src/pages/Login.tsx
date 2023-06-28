@@ -11,10 +11,10 @@ export const Login: FC = () => {
   const [nameError, setNameError] = useState<string | null>(null)
   const [passwordValue, setPasswordValue] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
-
-  const navigate = useNavigate()
   const [cookies, setCookies] = useCookies(['token'])
+
   const setUser = useProfileStore(({ setUser }) => setUser)
+  const navigate = useNavigate()
 
   useEffect(() => {
     setNameError(null)
@@ -94,32 +94,39 @@ export const Login: FC = () => {
         position={'relative'}
       >
         <form
+        onSubmit={(event) => event.preventDefault()}
           style={{
             borderRadius: '10px',
             padding: '15px 25px 20px 25px',
             margin: '0 80px',
             maxWidth: '600px',
             backgroundColor: '#FAF5FF',
-
             zIndex: 150,
             width: '100%',
             position: 'relative'
           }}
         >
-          <Text mb={7} fontSize={20} textAlign={'center'} fontWeight={'bold'}>
+          <Text
+            color={'blue.800'}
+            mb={5}
+            fontSize={20}
+            textAlign={'center'}
+            fontWeight={'bold'}
+          >
             {isLoginActive ? 'Логин' : 'Регистрация'}
           </Text>
           <Box>
-            <FormLabel htmlFor='user'>Имя пользователя</FormLabel>
+            <FormLabel color={'blue.800'} htmlFor='user'>
+              Имя пользователя
+            </FormLabel>
             <Input
               onChange={(e) => setNameValue(e.target.value)}
               onFocus={() => setNameError(null)}
               value={nameValue}
+              color={'black'}
               sx={{
-                _hover: {
-                  borderColor: nameError ? 'red' : 'black',
-                  borderWidth: 1
-                },
+                borderColor: nameError ? 'red' : 'blue.800',
+                _hover: {},
                 _focus: {},
                 _focusVisible: {
                   borderColor: 'blue.700',
@@ -127,26 +134,26 @@ export const Login: FC = () => {
                   outline: 'none'
                 }
               }}
-              borderColor={nameError ? 'red' : undefined}
               id='user'
               type='text'
               w={'100%'}
             />
-            <Text color={'red'}>{nameError}</Text>
+            <Text h={7} color={'red'}>
+              {nameError}
+            </Text>
           </Box>
           <Box>
-            <FormLabel htmlFor='password' mt={7}>
+            <FormLabel color={'blue.800'} htmlFor='password'>
               Пароль
             </FormLabel>
             <Input
               onChange={(e) => setPasswordValue(e.target.value)}
               value={passwordValue}
               onFocus={() => setPasswordError(null)}
+              color={'black'}
               sx={{
-                _hover: {
-                  borderColor: passwordError ? 'red' : 'black',
-                  borderWidth: 1
-                },
+                borderColor: passwordError ? 'red' : 'blue.800',
+                _hover: {},
                 _focus: {},
                 _focusVisible: {
                   borderColor: 'blue.700',
@@ -154,22 +161,37 @@ export const Login: FC = () => {
                   outline: 'none'
                 }
               }}
-              borderColor={passwordError ? 'red' : undefined}
               id='password'
               type='password'
               w={'100%'}
             />
-            <Text color={'red'}>{passwordError}</Text>
+            <Text h={7} color={'red'}>
+              {passwordError}
+            </Text>
           </Box>
-          <Flex mt={10} justifyContent={'space-evenly'}>
+          <Flex mt={3} justifyContent={'space-evenly'}>
             <Button
+              color={'whiteAlpha.900'}
+              bgColor={'blue.800'}
+              _hover={{
+                color: 'white'
+              }}
+              _autofill={{ _hover: {}, _focus: {} }}
               _disabled={{ cursor: 'default' }}
               onClick={isLoginActive ? loginHandler : registrationHandler}
               w={190}
             >
               {isLoginActive ? 'Войти' : 'Зарегистрироваться'}
             </Button>
-            <Button w={190} onClick={() => setIsLoginActive((prev) => !prev)}>
+            <Button
+              color={'whiteAlpha.900'}
+              bgColor={'blue.800'}
+              _hover={{
+                color: 'white'
+              }}
+              w={190}
+              onClick={() => setIsLoginActive((prev) => !prev)}
+            >
               {isLoginActive ? 'Зарегистрироваться' : 'Войти'}
             </Button>
           </Flex>

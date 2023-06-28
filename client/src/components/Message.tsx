@@ -1,5 +1,5 @@
 import { type FC } from 'react'
-import { Avatar, Box, Flex, Text } from '@chakra-ui/react'
+import { Avatar, Box, Flex, Text, useColorMode } from '@chakra-ui/react'
 import type { ChatMessage } from '../types'
 import { timeConvert } from '../utils'
 
@@ -9,11 +9,14 @@ interface Props {
 }
 
 export const Message: FC<Props> = ({ message, isSameMessage }) => {
+  const { colorMode } = useColorMode()
+
   return (
     <Flex>
       {!isSameMessage && (
         <Box>
           <Avatar
+            boxShadow={'base'}
             src={
               message.senderImg
                 ? `http://localhost:3000${message.senderImg}`
@@ -26,7 +29,7 @@ export const Message: FC<Props> = ({ message, isSameMessage }) => {
       <Box>
         {!isSameMessage && (
           <Box display={'inline-flex'} px={'3'} columnGap={'10px'}>
-            <Text fontWeight={'bold'} fontSize={'xl'}>
+            <Text color={'black'} fontWeight={'bold'} fontSize={'xl'}>
               {message.senderName}
             </Text>
             <Text fontSize={'xl'}>{timeConvert(message.sendAt)}</Text>
@@ -36,7 +39,7 @@ export const Message: FC<Props> = ({ message, isSameMessage }) => {
           pl={isSameMessage ? '16' : '4'}
           fontSize={'2xl'}
           fontWeight={'semibold'}
-          color={'gray.100'}
+          color={colorMode === 'light' ? 'gray.400' : 'gray.100'}
         >
           {message.text}
         </Text>

@@ -11,7 +11,12 @@ import {
   Tooltip,
   Grid,
   Switch,
-  useColorMode
+  useColorMode,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Box
 } from '@chakra-ui/react'
 import { SettingsIcon, CloseIcon } from '@chakra-ui/icons'
 import { useSnowContext } from '../store'
@@ -20,14 +25,14 @@ const THEMES: Record<string, string> = {
   purple: 'purple.700',
   blue: 'blue.700',
   green: 'green.700',
-  gray: 'gray.700',
+  gray: 'gray.600',
   orange: 'orange.700',
   red: 'red.700'
 }
 
 export const ThemeSettings: FC = () => {
   const { isOpen, onToggle, onClose } = useDisclosure()
-  const { setColorMode } = useColorMode()
+  const { setColorMode, colorMode } = useColorMode()
   const snowContext = useSnowContext()
 
   return (
@@ -42,15 +47,33 @@ export const ThemeSettings: FC = () => {
           cursor={'pointer'}
         >
           {isOpen ? (
-            <CloseIcon color={'white'} boxSize={'7'} />
+            <CloseIcon
+              color={colorMode === 'light' ? 'gray.800' : 'white'}
+              boxSize={'7'}
+            />
           ) : (
-            <SettingsIcon color={'white'} boxSize={'8'} />
+            <SettingsIcon
+              color={colorMode === 'light' ? 'gray.800' : 'white'}
+              boxSize={'8'}
+            />
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent py={'2'} mr={'2'} w={'60'}>
+      <PopoverContent
+        bgColor={
+          colorMode === 'dark'
+            ? 'white'
+            : colorMode === 'light'
+            ? 'gray.800'
+            : 'white'
+        }
+        py={'2'}
+        mr={'2'}
+        w={'60'}
+      >
         <Flex flexDirection={'column'}>
           <Heading
+            color={colorMode === 'light' ? 'white' : 'black'}
             lineHeight={'7'}
             mb={'2'}
             textAlign={'center'}
@@ -58,12 +81,7 @@ export const ThemeSettings: FC = () => {
           >
             theme
           </Heading>
-          <Grid
-            rowGap={'3'}
-            templateColumns={'repeat(3, 1fr)'}
-            flexWrap={'wrap'}
-            px={'2'}
-          >
+          <Grid rowGap={'3'} templateColumns={'repeat(3, 1fr)'} px={'2'}>
             {Object.keys(THEMES).map((theme) => (
               <Flex justifyContent={'center'} key={theme}>
                 <Tooltip
@@ -83,9 +101,44 @@ export const ThemeSettings: FC = () => {
               </Flex>
             ))}
           </Grid>
+          <Grid mt={4} rowGap={'3'} templateColumns={'repeat(2, 1fr)'} px={'2'}>
+            <Flex justifyContent={'center'}>
+              <Tooltip
+                borderRadius={'4px'}
+                label={'dark'}
+                fontSize={'md'}
+                bg={colorMode === 'light' ? 'white' : 'black'}
+                color={colorMode === 'light' ? 'black' : 'white'}
+              >
+                <Button
+                  onClick={() => setColorMode('dark')}
+                  _hover={{}}
+                  _active={{}}
+                  bg={'black'}
+                />
+              </Tooltip>
+            </Flex>
+            <Flex justifyContent={'center'}>
+              <Tooltip
+                borderRadius={'4px'}
+                label={'light'}
+                fontSize={'md'}
+                bg={colorMode === 'light' ? 'black' : 'white'}
+                color={colorMode === 'light' ? 'white' : 'black'}
+              >
+                <Button
+                  onClick={() => setColorMode('light')}
+                  _hover={{}}
+                  _active={{}}
+                  bg={'lightyellow'}
+                />
+              </Tooltip>
+            </Flex>
+          </Grid>
         </Flex>
         <Flex flexDirection={'column'}>
           <Heading
+            color={colorMode === 'light' ? 'white' : 'black'}
             lineHeight={'7'}
             my={'2'}
             textAlign={'center'}
@@ -115,6 +168,57 @@ export const ThemeSettings: FC = () => {
             />
           </Flex>
         </Flex>
+        <Box>
+          <Heading
+            color={colorMode === 'light' ? 'white' : 'black'}
+            lineHeight={'7'}
+            my={'2'}
+            textAlign={'center'}
+            fontSize={'3xl'}
+          >
+            snow speed
+          </Heading>
+          <Flex w={'100%'} justifyContent={'center'}>
+            <Slider
+              value={snowContext.speed[0]}
+              min={1}
+              max={20}
+              step={0.5}
+              orientation='vertical'
+              minH='32'
+              onChange={(value) => {
+                snowContext.onSpeedSnowChange(value, undefined)
+              }}
+            >
+              <SliderTrack
+                bgColor={colorMode === 'dark' ? 'gray.100' : undefined}
+                w={3}
+              >
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb w={5} />
+            </Slider>
+            <Slider
+              value={snowContext.speed[1]}
+              min={1}
+              max={20}
+              step={0.5}
+              orientation='vertical'
+              minH='32'
+              onChange={(value) => {
+                snowContext.onSpeedSnowChange(undefined, value)
+              }}
+            >
+              <SliderTrack
+                bgColor={colorMode === 'dark' ? 'gray.100' : undefined}
+                w={3}
+              >
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb w={5} />
+            </Slider>
+          </Flex>
+        </Box>
       </PopoverContent>
     </Popover>
   )
