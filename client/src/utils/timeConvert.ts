@@ -1,7 +1,10 @@
-export const timeConvert = (date: string | number | Date) => {
+export const timeConvert = (date: string | number | Date): string => {
   let newDate = new Date(date)
 
   const day = newDate.getDate()
+  if (isNaN(day)) {
+    return ''
+  }
   const month = newDate.getMonth() + 1
   const hours = newDate.getHours()
   const minutes = newDate.getMinutes()
