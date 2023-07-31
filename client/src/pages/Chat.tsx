@@ -6,6 +6,7 @@ import { ChatInput, Messages, Profile, ThemeSettings } from '../components'
 import { wsConnection, wsSend } from '../ws'
 import { useMessagesStore, useProfileStore } from '../store'
 import { WSResponse } from '../types'
+import { api } from '../utils'
 
 export const Chat: FC = () => {
   const [cookies, _, deleteCookies] = useCookies(['token'])
@@ -15,8 +16,8 @@ export const Chat: FC = () => {
     ({ setMessages, addMessage, changeAvatarMessage }) => ({
       setMessages,
       addMessage,
-      changeAvatarMessage
-    })
+      changeAvatarMessage,
+    }),
   )
 
   useEffect(() => {
@@ -24,31 +25,32 @@ export const Chat: FC = () => {
       navigate('/login')
       return
     }
-    ;(async () => {
-      fetch('http://localhost:3000/verifyToken', {
+
+    api(
+      '/verifyToken',
+      {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          token: cookies.token
-        })
+      },
+      {
+        token: cookies.token,
+      },
+    )
+      .then((data) => {
+        if (data.status === 'success') {
+          wsSend('me', data.payload.id)
+          wsSend('chat-messages', null)
+          user.setUser(data.payload)
+        } else {
+          throw new Error('wrong token')
+        }
       })
-        .then((resp) => resp.json())
-        .then((data) => {
-          if (data.status === 'success') {
-            wsSend('me', data.payload.id)
-            wsSend('chat-messages', null)
-            user.setUser(data.payload)
-          } else {
-            throw new Error('wrong token')
-          }
-        })
-        .catch(() => {
-          navigate('/login')
-          deleteCookies('token')
-        })
-    })()
+      .catch(() => {
+        navigate('/login')
+        deleteCookies('token')
+      })
   }, [cookies.token])
 
   useEffect(() => {
@@ -72,8 +74,8 @@ export const Chat: FC = () => {
               text: payloadMessage.message_text,
               senderId: payloadMessage.sender_id,
               senderName: payloadMessage.sender_name,
-              senderImg: payloadMessage.sender_image || undefined
-            }))
+              senderImg: payloadMessage.sender_image || undefined,
+            })),
           )
           break
         case 'chat-message':
@@ -83,7 +85,7 @@ export const Chat: FC = () => {
             text: data.payload.message_text,
             senderId: data.payload.sender_id,
             senderName: data.payload.sender_name,
-            senderImg: data.payload.sender_image || undefined
+            senderImg: data.payload.sender_image || undefined,
           })
           break
         case 'avatar-change':

@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie'
 import { Box, Button, Flex, FormLabel, Input, Text } from '@chakra-ui/react'
 import Fireworks from '@fireworks-js/react'
 import { useProfileStore } from '../store'
+import { api } from '../utils'
 
 export const Login: FC = () => {
   const [isLoginActive, setIsLoginActive] = useState(false)
@@ -32,55 +33,57 @@ export const Login: FC = () => {
       setPasswordError('Пароль должен быть 8 или больше символов')
       return
     }
-    fetch('http://localhost:3000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    api(
+      '/register',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      body: JSON.stringify({
+      {
         name: nameValue,
-        password: passwordValue
-      })
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          setCookies('token', data.payload.token)
-          setUser(data.payload)
-          navigate('/chat')
-        } else {
-          if (data.payload.error === 'name') {
-            setNameError(data.payload.text)
-          }
+        password: passwordValue,
+      },
+    ).then((data) => {
+      if (data.status === 'success') {
+        setCookies('token', data.payload.token)
+        setUser(data.payload)
+        navigate('/chat')
+      } else {
+        if (data.payload.error === 'name') {
+          setNameError(data.payload.text)
         }
-      })
+      }
+    })
   }
 
   const loginHandler = async () => {
-    fetch('http://localhost:3000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    api(
+      '/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      body: JSON.stringify({
+      {
         name: nameValue,
-        password: passwordValue
-      })
-    })
-      .then((resp) => resp.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          setCookies('token', data.payload.token)
-          setUser(data.payload)
-          navigate('/chat')
-        } else {
-          if (data.payload.error === 'name') {
-            setNameError(data.payload.text)
-          } else if (data.payload.error === 'password') {
-            setPasswordError(data.payload.text)
-          }
+        password: passwordValue,
+      },
+    ).then((data) => {
+      if (data.status === 'success') {
+        setCookies('token', data.payload.token)
+        setUser(data.payload)
+        navigate('/chat')
+      } else {
+        if (data.payload.error === 'name') {
+          setNameError(data.payload.text)
+        } else if (data.payload.error === 'password') {
+          setPasswordError(data.payload.text)
         }
-      })
+      }
+    })
   }
 
   return (
@@ -94,7 +97,7 @@ export const Login: FC = () => {
         position={'relative'}
       >
         <form
-        onSubmit={(event) => event.preventDefault()}
+          onSubmit={(event) => event.preventDefault()}
           style={{
             borderRadius: '10px',
             padding: '15px 25px 20px 25px',
@@ -103,7 +106,7 @@ export const Login: FC = () => {
             backgroundColor: '#FAF5FF',
             zIndex: 150,
             width: '100%',
-            position: 'relative'
+            position: 'relative',
           }}
         >
           <Text
@@ -131,8 +134,8 @@ export const Login: FC = () => {
                 _focusVisible: {
                   borderColor: 'blue.700',
                   borderWidth: 2,
-                  outline: 'none'
-                }
+                  outline: 'none',
+                },
               }}
               id='user'
               type='text'
@@ -158,8 +161,8 @@ export const Login: FC = () => {
                 _focusVisible: {
                   borderColor: 'blue.700',
                   borderWidth: 2,
-                  outline: 'none'
-                }
+                  outline: 'none',
+                },
               }}
               id='password'
               type='password'
@@ -174,7 +177,7 @@ export const Login: FC = () => {
               color={'whiteAlpha.900'}
               bgColor={'blue.800'}
               _hover={{
-                color: 'white'
+                color: 'white',
               }}
               _autofill={{ _hover: {}, _focus: {} }}
               _disabled={{ cursor: 'default' }}
@@ -187,7 +190,7 @@ export const Login: FC = () => {
               color={'whiteAlpha.900'}
               bgColor={'blue.800'}
               _hover={{
-                color: 'white'
+                color: 'white',
               }}
               w={190}
               onClick={() => setIsLoginActive((prev) => !prev)}
@@ -202,8 +205,8 @@ export const Login: FC = () => {
           delay: { min: 100, max: 500 },
           rocketsPoint: {
             min: 0,
-            max: 5
-          }
+            max: 5,
+          },
         }}
         style={{
           top: 0,
@@ -212,7 +215,7 @@ export const Login: FC = () => {
           zIndex: 100,
           height: '100%',
           position: 'fixed',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         }}
       />
     </>
