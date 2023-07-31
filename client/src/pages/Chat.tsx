@@ -4,12 +4,19 @@ import { useNavigate } from 'react-router-dom'
 import { Flex } from '@chakra-ui/react'
 import { ChatInput, Messages, Profile, ThemeSettings } from '../components'
 import { wsConnection, wsSend } from '../ws'
-import { useMessagesStore, useProfileStore } from '../store'
+import {
+  useMessagesStore,
+  useNotificationStore,
+  useProfileStore,
+} from '../store'
 import { WSResponse } from '../types'
 import { api } from '../utils'
 
 export const Chat: FC = () => {
   const [cookies, _, deleteCookies] = useCookies(['token'])
+  const { setNotification } = useNotificationStore(({ setNotification }) => ({
+    setNotification,
+  }))
   const navigate = useNavigate()
   const user = useProfileStore((user) => user)
   const { setMessages, addMessage, changeAvatarMessage } = useMessagesStore(
@@ -79,6 +86,12 @@ export const Chat: FC = () => {
           )
           break
         case 'chat-message':
+          if (user.user.id !== data.payload.sender_id) {
+            setNotification({
+              message: `Новое сообщение от ${data.payload.sender_name}`,
+              status: 'success',
+            })
+          }
           addMessage({
             id: data.payload.message_id,
             sendAt: data.payload.send_at,

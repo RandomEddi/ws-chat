@@ -4,7 +4,7 @@ export const api = async (url: string, parameters?: RequestInit, body?: any) => 
     parameters
       ? {
           ...parameters,
-          body: body ? JSON.stringify(body) : undefined,
+          body: body ? JSON.stringify(body) : body,
         }
       : undefined,
   )
