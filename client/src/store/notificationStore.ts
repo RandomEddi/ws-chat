@@ -20,12 +20,9 @@ export const useNotificationStore = create<InitialState & Notification>()(
         open: true,
       }),
     clearNotification: () => {
-      set(
-        {
-          open: false,
-        },
-        true,
-      )
+      set({
+        open: false,
+      })
     },
   }),
 )

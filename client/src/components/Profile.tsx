@@ -19,7 +19,6 @@ export const Profile: FC = () => {
   const [_, __, deleteCookies] = useCookies()
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
   const setNotification = useNotificationStore(({ setNotification }) => (setNotification))
-  console.log('Profile')
   const user = useProfileStore(({ user }) => user)
   const navigate = useNavigate()
   const { colorMode } = useColorMode()

@@ -20,9 +20,9 @@ import {
 import { LinkIcon } from '@chakra-ui/icons'
 import { wsSend } from '../ws'
 import { api, colorChange } from '../utils'
-import { useProfileStore } from '../store'
-import { User } from '../types'
-import { useClickOutside } from '../hooks'
+import { useNotificationStore, useProfileStore } from '../store'
+import { ApiResponse, User } from '../types'
+import { ChatImages } from './ChatImages'
 
 type PartialUser = Omit<User, 'token'>
 
@@ -31,26 +31,50 @@ export const ChatInput: FC = () => {
   const [directedToList, setDirectedToList] = useState<PartialUser[]>([])
   const [isDirectedToListOpen, setIsDirectedToListOpen] =
     useState<boolean>(false)
+  const [uploadedImages, setUploadedFiles] = useState<string[]>([])
+  const setNotification = useNotificationStore(
+    ({ setNotification }) => setNotification,
+  )
   const { colorMode } = useColorMode()
   const inputRef = useRef<HTMLInputElement>(null)
   const user = useProfileStore(({ user }) => user)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  useClickOutside(inputRef, () => {
-    setIsDirectedToListOpen(false)
-    setDirectedToList([])
-  })
+  const handleChatImageDelete = (imageUrl: string) => {
+    api<ApiResponse<string>>('/delete-chat-image', {
+      method: 'POST',
+      body: JSON.stringify({ imageUrl }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((data) => {
+      if (data.status === 'success') {
+        setUploadedFiles((prev) => prev.filter((image) => image !== imageUrl))
+      }
+      setNotification({ message: data.payload, status: data.status })
+    })
+  }
 
   const handleChatImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files?.length > 0) {
-      const file = event.target.files[0]
+      const files = event.target.files
+      if (files.length > 5) {
+        setNotification({
+          status: 'error',
+          message: 'Можно загружать не более 5 файлов',
+        })
+        return
+      }
       const formData = new FormData()
-      formData.append('file', file)
+      for (const file of files) {
+        formData.append(Math.random().toString(), file)
+      }
       formData.append('userId', user.id.toString())
-      api('/change-avatar', {
+      api<ApiResponse<string[]>>('/upload-chat-image', {
         method: 'POST',
         body: formData,
       }).then((data) => {
+        setUploadedFiles((prev) => [...prev, ...data.payload])
       })
     }
   }
@@ -137,6 +161,7 @@ export const ChatInput: FC = () => {
           type='file'
           id='images'
           name='images'
+          onChange={handleChatImageChange}
           accept='image/png, image/jpeg'
           multiple
         />
@@ -182,6 +207,10 @@ export const ChatInput: FC = () => {
           border={'none'}
           borderRadius={'0'}
           size={'md'}
+          onBlur={() => {
+            setIsDirectedToListOpen(false)
+            setDirectedToList([])
+          }}
           placeholder='Введите сообщение...'
           onFocus={() => getDirectedToList(value)}
           bgColor={
@@ -207,6 +236,10 @@ export const ChatInput: FC = () => {
                 ? 'gray.100'
                 : colorChange(colorMode, 600),
           }}
+        />
+        <ChatImages
+          handleDeleteImage={handleChatImageDelete}
+          images={uploadedImages}
         />
         <Button
           ref={buttonRef}

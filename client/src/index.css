@@ -11,4 +11,5 @@ html, body, #root {
 
 body {
   position: relative;
+  flex-wrap: wrap;
 }

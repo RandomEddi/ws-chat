@@ -1,1 +1,1 @@
-{ "verbose": true, "ignore": ["./avatars"] }
+{ "verbose": true, "ignore": ["./avatars", "./chat-images"] }

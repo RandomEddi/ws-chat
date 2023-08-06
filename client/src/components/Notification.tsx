@@ -25,7 +25,6 @@ export const Notification: FC = () => {
 
   useEffect(() => {
     if (!notification.open) return
-    setNotificationProgress(0)
 
     interval.current = setInterval(() => {
       setNotificationProgress((prevProgress) => {
@@ -41,7 +40,7 @@ export const Notification: FC = () => {
     return () => {
       clearCurrentInterval()
     }
-  }, [notification.id])
+  }, [notification.id, notification.open])
 
   if (!notification.open) return <></>
 
