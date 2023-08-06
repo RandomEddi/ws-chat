@@ -6,9 +6,7 @@ import type { ChatMessage } from '../types'
 import { Message, SnowBackground } from '.'
 
 export const Messages: FC = () => {
-  const { messages } = useMessagesStore(({ messages }) => ({
-    messages
-  }))
+  const messages = useMessagesStore(({ messages }) => (messages))
   const { colorMode } = useColorMode()
   const messagesDivRef = useRef<HTMLDivElement | null>(null)
   const lastMessage = useRef<null | ChatMessage>(null)

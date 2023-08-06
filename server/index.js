@@ -6,9 +6,14 @@ const cors = require('cors')
 require('dotenv').config()
 const dispatchEvent = require('./websocket/dispatchEvent')
 const dispatchBinaryEvent = require('./websocket/dispatchBinaryEvent')
+const fileUpload = require('express-fileupload')
 const authRouter = require('./routes/auth')
+const profileRouter = require('./routes/profile')
+const usersRouter = require('./routes/users')
 
 const app = express()
+const server = http.createServer(app)
+const webSocketServer = new WebSocket.Server({ server })
 
 app.use(express.static(path.resolve(__dirname, '..', 'dist')))
 
@@ -16,7 +21,11 @@ app.use(express.json())
 
 app.use(cors())
 
+app.use(fileUpload({}))
+
 app.use('/', authRouter)
+app.use('/', usersRouter)
+app.use('/', profileRouter(webSocketServer))
 
 const avatarsDirectory = path.join(__dirname, 'avatars')
 app.use(
@@ -24,18 +33,14 @@ app.use(
   express.static(avatarsDirectory, {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'image/jpeg'
-    }
-  })
+      'Content-Type': 'image/jpeg',
+    },
+  }),
 )
 
 app.get('*', (_req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'dist', 'index.html'))
 })
-
-const server = http.createServer(app)
-
-const webSocketServer = new WebSocket.Server({ server })
 
 webSocketServer.on('connection', (ws) => {
   ws.on('message', (message) => {

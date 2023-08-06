@@ -1,12 +1,13 @@
-export const api = async (url: string, parameters?: RequestInit, body?: any) => {
-  const response = await fetch(
-    import.meta.env.VITE_BASE_URL + url,
-    parameters
-      ? {
-          ...parameters,
-          body: body ? JSON.stringify(body) : body,
-        }
-      : undefined,
-  )
+export const api = async <T = any>(
+  url: string,
+  parameters?: RequestInit,
+): Promise<T> => {
+  const response = await fetch(import.meta.env.VITE_BASE_URL + url, {
+    ...parameters,
+    headers: {
+      'Content-Type': 'application/json',
+      ...parameters?.headers,
+    },
+  })
   return await response.json()
 }

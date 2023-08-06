@@ -38,10 +38,17 @@ export const Message: FC<Props> = ({ message, isSameMessage }) => {
         <Text
           pl={isSameMessage ? '16' : '4'}
           fontSize={'2xl'}
-          fontWeight={'semibold'}
+          fontWeight={'normal'}
           color={colorMode === 'light' ? 'gray.400' : 'gray.100'}
         >
-          {message.text}
+          {message.isMessageDirected ? (
+            <>
+              <b>{message.text.split(' ').at(0)} </b>
+              {message.text.split(' ').slice(1).join(' ')}
+            </>
+          ) : (
+            message.text
+          )}
         </Text>
       </Box>
     </Flex>

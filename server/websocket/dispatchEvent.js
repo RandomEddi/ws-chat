@@ -1,63 +1,134 @@
 const dbConnection = require('../services/db')
 
-const dispatchEvent = (message, ws, webSocketServer) => {
+const dispatchEvent = async (message, ws, webSocketServer) => {
   const json = JSON.parse(message)
-  switch (json.event) {
-    case 'chat-message':
-      dbConnection.query(
-        `INSERT INTO messages (userId, text, send_at) VALUES (${
-          json.payload.userId
-        }, "${json.payload.text}", ${Date.now()})`,
-        (err, result) => {
-          if (err) {
-            throw Error(err)
-          } else {
+  try {
+    switch (json.event) {
+      case 'chat-message':
+        const firstWordOfMessage = json.payload.text.split(' ')[0]
+        let messageDirectedToId = null
+
+        if (
+          firstWordOfMessage.startsWith('@') &&
+          firstWordOfMessage.slice(1).length > 0
+        ) {
+          messageDirectedToId = await new Promise((res) => {
             dbConnection.query(
-              `SELECT m.id AS message_id, m.text AS message_text, u.id as sender_id, u.name AS sender_name, u.imageUrl as sender_image, m.send_at AS send_at
-              FROM Messages m
-              JOIN Users u ON m.userId = u.id
-              WHERE m.id = ${result.insertId}
-              `,
+              `SELECT id, name FROM users WHERE name = "${firstWordOfMessage.slice(
+                1,
+              )}"`,
               (_, rows) => {
-                webSocketServer.clients.forEach((client) =>
-                  client.send(
-                    JSON.stringify({ event: 'chat-message', payload: rows[0] })
-                  )
-                )
-              }
+                if (rows[0]) {
+                  res(rows[0].id)
+                } else {
+                  res(null)
+                }
+              },
             )
-          }
+          })
         }
-      )
 
-      break
-    case 'chat-messages':
-      dbConnection.query(
-        `
-      SELECT m.id AS message_id, u.name as sender_name, u.id as sender_id, u.imageUrl as sender_image, m.text AS message_text, m.send_at as send_at
-      FROM Messages m, Users u
-      WHERE m.userId = u.id 
-      `,
-        (error, rows) => {
-          if (error) {
-          } else {
-            ws.send(
-              JSON.stringify({
-                event: 'chat-messages',
-                payload: rows || []
-              })
-            )
-          }
-        }
-      )
+        dbConnection.query(
+          `INSERT INTO messages (userId, text, send_at${
+            messageDirectedToId ? ', directedTo' : ''
+          }) VALUES (?, ?, ?${
+            messageDirectedToId ? `, ?` : ''
+          })`,
+          [
+            json.payload.userId,
+            json.payload.text,
+            Date.now(),
+            messageDirectedToId,
+          ],
+          (err, result) => {
+            if (err) {
+              throw Error(err)
+            } else {
+              dbConnection.query(
+                `SELECT m.id AS message_id, m.text AS message_text, m.directedTo as message_directed_to, u.id as sender_id, u.name AS sender_name, u.imageUrl as sender_image, m.send_at AS send_at
+                FROM Messages m
+                JOIN Users u ON m.userId = u.id
+                WHERE m.id = ${result.insertId}
+                `,
+                (_, rows) => {
+                  if (messageDirectedToId) {
+                    webSocketServer.clients.forEach((client) => {
+                      if (
+                        messageDirectedToId === client.userId ||
+                        json.payload.userId === client.userId
+                      ) {
+                        client.send(
+                          JSON.stringify({
+                            event: 'chat-message',
+                            payload: {
+                              ...rows[0],
+                              isMessageDirected:
+                                messageDirectedToId === client.userId,
+                            },
+                          }),
+                        )
+                      }
+                    })
+                  } else {
+                    webSocketServer.clients.forEach((client) => {
+                      client.send(
+                        JSON.stringify({
+                          event: 'chat-message',
+                          payload: rows[0],
+                        }),
+                      )
+                    })
+                  }
+                },
+              )
+            }
+          },
+        )
 
-      break
-    case 'me':
-      ws.userId = json.payload
-      break
-    default:
-      ws.send(new Error('wrong query').message)
-      break
+        break
+      case 'chat-messages':
+        dbConnection.query(
+          `
+        SELECT m.id AS message_id, u.name as sender_name, u.id as sender_id, u.imageUrl as sender_image, m.directedTo as message_directed_to, m.text AS message_text, m.send_at as send_at
+        FROM Messages m, Users u
+        WHERE m.userId = u.id 
+        `,
+          (error, rows) => {
+            if (error) {
+              console.log(error)
+            } else {
+              ws.send(
+                JSON.stringify({
+                  event: 'chat-messages',
+                  payload:
+                    rows
+                      .filter((m) => {
+                        if (
+                          m.sender_id === ws.userId ||
+                          m.message_directed_to === null ||
+                          m.message_directed_to === ws.userId
+                        ) {
+                          return m
+                        }
+                        return null
+                      })
+                      .sort((a, b) => a.message_id - b.message_id) || [],
+                }),
+              )
+            }
+          },
+        )
+
+        break
+      case 'me':
+        ws.userId = json.payload
+        break
+      default:
+        ws.send(new Error('wrong query').message)
+        break
+    }
+  } catch (err) {
+    console.log(err)
   }
 }
 

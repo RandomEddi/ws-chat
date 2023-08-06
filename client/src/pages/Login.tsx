@@ -33,19 +33,16 @@ export const Login: FC = () => {
       setPasswordError('Пароль должен быть 8 или больше символов')
       return
     }
-    api(
-      '/register',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    api('/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
+      body: JSON.stringify({
         name: nameValue,
         password: passwordValue,
-      },
-    ).then((data) => {
+      }),
+    }).then((data) => {
       if (data.status === 'success') {
         setCookies('token', data.payload.token)
         setUser(data.payload)
@@ -59,19 +56,16 @@ export const Login: FC = () => {
   }
 
   const loginHandler = async () => {
-    api(
-      '/login',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    api('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
+      body: JSON.stringify({
         name: nameValue,
         password: passwordValue,
-      },
-    ).then((data) => {
+      }),
+    }).then((data) => {
       if (data.status === 'success') {
         setCookies('token', data.payload.token)
         setUser(data.payload)

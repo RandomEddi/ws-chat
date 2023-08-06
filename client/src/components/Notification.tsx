@@ -7,11 +7,11 @@ const PROGRESS_SPEED = 40
 const PROGRESS_INCREASED_BY = 1
 
 export const Notification: FC = () => {
-  const { clearNotification, notification } = useNotificationStore(
-    ({ clearNotification, notification }) => ({
-      notification,
-      clearNotification,
-    }),
+  const notification = useNotificationStore(
+    ({ id, message, open, status }) => ({ id, message, open, status }),
+  )
+  const clearNotification = useNotificationStore(
+    ({ clearNotification }) => clearNotification,
   )
   const [notificationProgress, setNotificationProgress] = useState<number>(0)
   const interval = useRef<NodeJS.Timer | null>(null)
@@ -25,7 +25,6 @@ export const Notification: FC = () => {
 
   useEffect(() => {
     if (!notification.open) return
-    clearCurrentInterval()
     setNotificationProgress(0)
 
     interval.current = setInterval(() => {
@@ -64,7 +63,9 @@ export const Notification: FC = () => {
       status={notification.status}
     >
       <AlertIcon />
-      <AlertDescription color={'black'}>{notification.message}</AlertDescription>
+      <AlertDescription color={'black'}>
+        {notification.message}
+      </AlertDescription>
       {notification.status !== 'loading' && (
         <Progress
           position={'absolute'}

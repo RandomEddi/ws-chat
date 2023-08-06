@@ -8,24 +8,35 @@ import {
   Flex,
   useColorMode,
   Text,
-  FormLabel
+  FormLabel,
 } from '@chakra-ui/react'
 import { wsConnection } from '../ws'
-import { useProfileStore } from '../store'
-import { colorChange } from '../utils'
+import { useProfileStore, useNotificationStore } from '../store'
+import { api, colorChange } from '../utils'
 
 export const Profile: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [_, __, deleteCookies] = useCookies()
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
+  const setNotification = useNotificationStore(({ setNotification }) => (setNotification))
+  console.log('Profile')
   const user = useProfileStore(({ user }) => user)
   const navigate = useNavigate()
   const { colorMode } = useColorMode()
-
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files?.length > 0) {
       const file = event.target.files[0]
-      wsConnection.send(file)
+      // wsConnection.send(file)
+      const formData = new FormData()
+
+      formData.append('file', file)
+      formData.append('userId', user.id.toString())
+      api('/change-avatar', {
+        method: 'POST',
+        body: formData,
+      }).then((data) => {
+        setNotification({ status: data.status, message: data.payload })
+      })
     }
   }
 
@@ -33,7 +44,7 @@ export const Profile: FC = () => {
     deleteCookies('token')
     navigate('/login')
   }
-
+  
   return (
     <>
       <Box cursor={'pointer'} onClick={() => setIsOpen(true)}>
@@ -77,7 +88,8 @@ export const Profile: FC = () => {
                     <input
                       style={{ display: 'none' }}
                       type='file'
-                      id='profile-avatar'
+                      id='image'
+                      name='image'
                       accept='image/png, image/jpeg'
                       onChange={handleAvatarChange}
                     />
@@ -91,7 +103,7 @@ export const Profile: FC = () => {
                       color={'black'}
                       backgroundColor={'white'}
                       borderRadius={'full'}
-                      htmlFor='profile-avatar'
+                      htmlFor='image'
                       p={'0'}
                       m={'0'}
                     >

@@ -11,21 +11,36 @@ import {
 } from '../store'
 import { WSResponse } from '../types'
 import { api } from '../utils'
+import { useTitle } from '../hooks'
+import { shallow } from 'zustand/shallow'
 
 export const Chat: FC = () => {
   const [cookies, _, deleteCookies] = useCookies(['token'])
-  const { setNotification } = useNotificationStore(({ setNotification }) => ({
-    setNotification,
-  }))
+  const setNotification = useNotificationStore(
+    ({ setNotification }) => setNotification,
+  )
+  const { updateTitle, title } = useTitle()
   const navigate = useNavigate()
   const user = useProfileStore((user) => user)
-  const { setMessages, addMessage, changeAvatarMessage } = useMessagesStore(
-    ({ setMessages, addMessage, changeAvatarMessage }) => ({
-      setMessages,
-      addMessage,
-      changeAvatarMessage,
-    }),
-  )
+  const setMessages = useMessagesStore(({ setMessages }) => setMessages)
+  const changeAvatarMessage = useMessagesStore(({ changeAvatarMessage }) => changeAvatarMessage)
+  const addMessage = useMessagesStore(({ addMessage }) => addMessage)
+
+  useEffect(() => {
+    const setDefaultTitle = () => {
+      updateTitle('Chat')
+    }
+
+    if (title !== 'Chat') {
+      window.addEventListener('focus', setDefaultTitle)
+    }
+
+    return () => {
+      if (title !== 'Chat') {
+        window.removeEventListener('focus', setDefaultTitle)
+      }
+    }
+  }, [title])
 
   useEffect(() => {
     if (!cookies.token) {
@@ -33,18 +48,15 @@ export const Chat: FC = () => {
       return
     }
 
-    api(
-      '/verifyToken',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    api('/verifyToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
+      body: JSON.stringify({
         token: cookies.token,
-      },
-    )
+      }),
+    })
       .then((data) => {
         if (data.status === 'success') {
           wsSend('me', data.payload.id)
@@ -72,6 +84,7 @@ export const Chat: FC = () => {
             sender_name: string
             sender_id: number
             sender_image: string | null
+            message_directed_to?: number | null
           }[]
 
           setMessages(
@@ -82,11 +95,16 @@ export const Chat: FC = () => {
               senderId: payloadMessage.sender_id,
               senderName: payloadMessage.sender_name,
               senderImg: payloadMessage.sender_image || undefined,
+              isMessageDirected:
+                payloadMessage.message_directed_to === user.user.id,
             })),
           )
           break
         case 'chat-message':
-          if (user.user.id !== data.payload.sender_id) {
+          if (data.payload.isMessageDirected) {
+            if (document.hidden) {
+              updateTitle('New message')
+            }
             setNotification({
               message: `Новое сообщение от ${data.payload.sender_name}`,
               status: 'success',
@@ -99,6 +117,7 @@ export const Chat: FC = () => {
             senderId: data.payload.sender_id,
             senderName: data.payload.sender_name,
             senderImg: data.payload.sender_image || undefined,
+            isMessageDirected: data.payload.isMessageDirected,
           })
           break
         case 'avatar-change':

@@ -5,4 +5,5 @@ export interface ChatMessage {
   text: string
   sendAt: number
   id: number
+  isMessageDirected?: boolean
 }
