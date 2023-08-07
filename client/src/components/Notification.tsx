@@ -18,6 +18,7 @@ export const Notification: FC = () => {
 
   const clearCurrentInterval = () => {
     if (interval.current) {
+      setNotificationProgress(0)
       clearInterval(interval.current)
       interval.current = null
     }
