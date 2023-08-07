@@ -115,6 +115,9 @@ export const ChatInput: FC = () => {
       api<PartialUser[]>(`/get-users`, {
         method: 'POST',
         body: JSON.stringify({ name }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }).then((data) => {
         if (data.length > 0) {
           setDirectedToList(data)

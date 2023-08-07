@@ -52,7 +52,7 @@ export const Message: FC<Props> = ({ message, isSameMessage }) => {
           )}
         </Text>
         {message.images.length > 0 && (
-          <Flex px={4} py={1} gap={2}>
+          <Flex flexWrap={'wrap'} px={4} py={1} gap={2}>
             {message.images.map((image) => (
               <Image key={image} imageUrl={image}></Image>
             ))}
