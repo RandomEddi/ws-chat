@@ -5,5 +5,6 @@ export interface ChatMessage {
   text: string
   sendAt: number
   id: number
+  images: string[]
   isMessageDirected?: boolean
 }

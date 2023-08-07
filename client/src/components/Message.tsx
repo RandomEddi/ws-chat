@@ -2,6 +2,7 @@ import { type FC } from 'react'
 import { Avatar, Box, Flex, Text, useColorMode } from '@chakra-ui/react'
 import type { ChatMessage } from '../types'
 import { timeConvert } from '../utils'
+import { Image } from './Image'
 
 interface Props {
   message: ChatMessage
@@ -50,6 +51,13 @@ export const Message: FC<Props> = ({ message, isSameMessage }) => {
             message.text
           )}
         </Text>
+        {message.images.length > 0 && (
+          <Flex px={4} py={1} gap={2}>
+            {message.images.map((image) => (
+              <Image key={image} imageUrl={image}></Image>
+            ))}
+          </Flex>
+        )}
       </Box>
     </Flex>
   )

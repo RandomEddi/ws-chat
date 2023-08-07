@@ -29,14 +29,13 @@ const dispatchEvent = async (message, ws, webSocketServer) => {
         }
 
         dbConnection.query(
-          `INSERT INTO messages (userId, text, send_at${
+          `INSERT INTO messages (userId, text, images, send_at${
             messageDirectedToId ? ', directedTo' : ''
-          }) VALUES (?, ?, ?${
-            messageDirectedToId ? `, ?` : ''
-          })`,
+          }) VALUES (?, ?, ?, ?${messageDirectedToId ? `, ?` : ''})`,
           [
             json.payload.userId,
             json.payload.text,
+            JSON.stringify(json.payload.images),
             Date.now(),
             messageDirectedToId,
           ],
@@ -45,7 +44,7 @@ const dispatchEvent = async (message, ws, webSocketServer) => {
               throw Error(err)
             } else {
               dbConnection.query(
-                `SELECT m.id AS message_id, m.text AS message_text, m.directedTo as message_directed_to, u.id as sender_id, u.name AS sender_name, u.imageUrl as sender_image, m.send_at AS send_at
+                `SELECT m.id AS message_id, m.text AS message_text, m.directedTo as message_directed_to, u.id as sender_id, u.name AS sender_name,m.images as message_images, u.imageUrl as sender_image, m.send_at AS send_at
                 FROM Messages m
                 JOIN Users u ON m.userId = u.id
                 WHERE m.id = ${result.insertId}
@@ -89,7 +88,7 @@ const dispatchEvent = async (message, ws, webSocketServer) => {
       case 'chat-messages':
         dbConnection.query(
           `
-        SELECT m.id AS message_id, u.name as sender_name, u.id as sender_id, u.imageUrl as sender_image, m.directedTo as message_directed_to, m.text AS message_text, m.send_at as send_at
+        SELECT m.id AS message_id, u.name as sender_name, u.id as sender_id, u.imageUrl as sender_image, m.directedTo as message_directed_to, m.images AS message_images, m.text AS message_text, m.send_at as send_at
         FROM Messages m, Users u
         WHERE m.userId = u.id 
         `,

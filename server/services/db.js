@@ -24,7 +24,10 @@ connection.query(`CREATE TABLE IF NOT EXISTS Messages (
   id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   userId INT(10) NOT NULL,
   text TEXT NOT NULL,
+  images JSON NOT NULL DEFAULT ('[]'),
   send_at DATE NOT NULL,
+  directedTo INT(10),
+  FOREIGN KEY (directedTo) REFERENCES Users(id),
   FOREIGN KEY (userId) REFERENCES Users(id)
   )`)
 

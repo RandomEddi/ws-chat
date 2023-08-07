@@ -23,7 +23,9 @@ export const Chat: FC = () => {
   const navigate = useNavigate()
   const user = useProfileStore((user) => user)
   const setMessages = useMessagesStore(({ setMessages }) => setMessages)
-  const changeAvatarMessage = useMessagesStore(({ changeAvatarMessage }) => changeAvatarMessage)
+  const changeAvatarMessage = useMessagesStore(
+    ({ changeAvatarMessage }) => changeAvatarMessage,
+  )
   const addMessage = useMessagesStore(({ addMessage }) => addMessage)
 
   useEffect(() => {
@@ -85,6 +87,7 @@ export const Chat: FC = () => {
             sender_id: number
             sender_image: string | null
             message_directed_to?: number | null
+            message_images: string
           }[]
 
           setMessages(
@@ -97,6 +100,7 @@ export const Chat: FC = () => {
               senderImg: payloadMessage.sender_image || undefined,
               isMessageDirected:
                 payloadMessage.message_directed_to === user.user.id,
+              images: JSON.parse(payloadMessage.message_images),
             })),
           )
           break
@@ -118,6 +122,7 @@ export const Chat: FC = () => {
             senderName: data.payload.sender_name,
             senderImg: data.payload.sender_image || undefined,
             isMessageDirected: data.payload.isMessageDirected,
+            images: JSON.parse(data.payload.message_images),
           })
           break
         case 'avatar-change':

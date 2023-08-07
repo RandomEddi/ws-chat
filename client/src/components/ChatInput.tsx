@@ -81,12 +81,14 @@ export const ChatInput: FC = () => {
 
   const messageSendHandler = (event: FormEvent) => {
     event.preventDefault()
-    if (value === '') return
+    if (value === '' && uploadedImages.length === 0) return
     setValue('')
     wsSend('chat-message', {
       userId: user.id,
       text: value,
+      images: uploadedImages,
     })
+    setUploadedFiles([])
   }
 
   useEffect(() => {
