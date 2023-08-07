@@ -11,7 +11,7 @@ interface Props {
 
 const MAX_SCALE = 3
 const MIN_SCALE = 0.8
-const SCALING_FACTOR = 0.01
+const SCALING_FACTOR = 0.1
 
 export const ImageModal: FC<Props> = ({ imageUrl, onCloseModal }) => {
   const [scale, setScale] = useState<number>(1)
@@ -20,9 +20,8 @@ export const ImageModal: FC<Props> = ({ imageUrl, onCloseModal }) => {
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
       const direction = event.deltaY < 0 ? 'up' : 'down'
-      const absoluteDiff = Math.abs(event.deltaY) * SCALING_FACTOR
       const unclampedNewScale =
-        direction === 'up' ? scale + absoluteDiff : scale - absoluteDiff
+        direction === 'up' ? scale + SCALING_FACTOR : scale - SCALING_FACTOR
       const newScale = clamp(unclampedNewScale, MIN_SCALE, MAX_SCALE)
 
       setScale(newScale)
