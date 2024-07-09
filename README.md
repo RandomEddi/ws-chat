@@ -1,1 +1,1 @@
-pusto
+Общий чат на websocket
